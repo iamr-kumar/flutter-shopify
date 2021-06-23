@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:shopify/screens/products_screen.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,26 +40,39 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-          primarySwatch: customColor,
-          canvasColor: Colors.white,
-          accentColor: Color.fromRGBO(247, 248, 251, 1),
-          textTheme: ThemeData.light().textTheme.copyWith(
-              bodyText1: TextStyle(color: Color.fromRGBO(190, 191, 192, 1)))),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+        title: 'Flutter Demo',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+            primarySwatch: customColor,
+            canvasColor: Colors.white,
+            accentColor: Color.fromRGBO(247, 248, 251, 1),
+            fontFamily: 'Lato',
+            textTheme: ThemeData.light().textTheme.copyWith(
+                bodyText1: TextStyle(color: Color.fromRGBO(190, 191, 192, 1)))),
+        home: LandingPage());
   }
 }
 
-class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key, @required this.title}) : super(key: key);
-
-  final String title;
+class LandingPage extends StatelessWidget {
+  final Future<FirebaseApp> _initialization = Firebase.initializeApp();
 
   @override
   Widget build(BuildContext context) {
-    return ProductsScreen();
+    return FutureBuilder(
+      future: _initialization,
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {
+          return Scaffold(body: Center(child: Text("Error ${snapshot.error}")));
+        }
+        if (snapshot.connectionState == ConnectionState.done) {
+          return Scaffold(
+              appBar: AppBar(),
+              body: Center(child: Text('Firebase App initalized')));
+        }
+
+        return Scaffold(
+            appBar: AppBar(), body: Center(child: Text('Initializing App...')));
+      },
+    );
   }
 }
