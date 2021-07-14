@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopify/constants/Constants.dart';
 
@@ -11,6 +12,10 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-            child: Text('Home Screen', style: Constants.regularHeading)));
+            child: TextButton(
+                child: Text('Logout'),
+                onPressed: () {
+                  FirebaseAuth.instance.signOut();
+                })));
   }
 }
