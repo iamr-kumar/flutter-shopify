@@ -16,6 +16,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
+            accentColor: Color(0xFFF97751),
             textTheme:
                 GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme)),
         home: LandingScreen());
