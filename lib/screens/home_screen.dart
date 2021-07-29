@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:shopify/tabs/home_tab.dart';
+import 'package:shopify/tabs/profile_tab.dart';
+import 'package:shopify/tabs/saved_tab.dart';
+import 'package:shopify/tabs/search_tab.dart';
 
 import 'package:shopify/widgets/bottom_tabs.dart';
 
@@ -39,10 +43,10 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             children: [
-              Container(child: Center(child: Text("Homepage"))),
-              Container(child: Center(child: Text("Favorites"))),
-              Container(child: Center(child: Text("Search"))),
-              Container(child: Center(child: Text("Profile"))),
+              HomeTab(),
+              SavedTab(),
+              SearchTab(),
+              ProfileTab(),
             ],
           ),
         ),
