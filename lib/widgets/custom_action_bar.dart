@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopify/constants/Constants.dart';
+import 'package:shopify/screens/cart_screen.dart';
 
 class CustomActionBar extends StatelessWidget {
   final String title;
@@ -14,6 +17,11 @@ class CustomActionBar extends StatelessWidget {
       this.hasTitle,
       this.hasBackground,
       this.hasBlackColor});
+
+  final CollectionReference _usersRef =
+      FirebaseFirestore.instance.collection('Users');
+
+  final User _user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -35,32 +43,60 @@ class CustomActionBar extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           if (_hasBackArrow)
-            Container(
-              height: 42,
-              width: 42,
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: Image(
-                    image: AssetImage("assets/images/back_arrow.png"),
-                    color: _hasBlackColor ? Colors.black : Colors.white),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                height: 42,
+                width: 42,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: Image(
+                      image: AssetImage("assets/images/back_arrow.png"),
+                      color: _hasBlackColor ? Colors.black : Colors.white),
+                ),
+                decoration: BoxDecoration(
+                    color: _hasBlackColor
+                        ? Colors.white.withOpacity(0.7)
+                        : Colors.black,
+                    borderRadius: BorderRadius.circular(5.0)),
               ),
-              decoration: BoxDecoration(
-                  color: _hasBlackColor ? Colors.white : Colors.black,
-                  borderRadius: BorderRadius.circular(5.0)),
             ),
           if (_hasTitle) Text(this.title, style: Constants.boldHeading),
-          Container(
-              height: 40,
-              width: 40,
-              decoration: BoxDecoration(
-                  color: _hasBlackColor ? Colors.white : Colors.black,
-                  borderRadius: BorderRadius.circular(5.0)),
-              alignment: Alignment.center,
-              child: Text(
-                '0',
-                style: TextStyle(
-                    color: _hasBlackColor ? Colors.black : Colors.white),
-              ))
+          StreamBuilder(
+              stream: _usersRef.doc(_user.uid).collection('Cart').snapshots(),
+              builder: (context, snapshot) {
+                int _totalItem = 0;
+
+                if (snapshot.connectionState == ConnectionState.active) {
+                  List document = snapshot.data.docs;
+                  _totalItem = document.length;
+                }
+                return GestureDetector(
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CartScreen())),
+                  child: Container(
+                      height: 42,
+                      width: 42,
+                      decoration: BoxDecoration(
+                          color: _totalItem > 0
+                              ? Theme.of(context).accentColor
+                              : _hasBlackColor
+                                  ? Colors.white.withOpacity(0.7)
+                                  : Colors.black,
+                          borderRadius: BorderRadius.circular(5.0)),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '$_totalItem' ?? '0',
+                        style: TextStyle(
+                            fontSize: 18.0,
+                            color: _totalItem > 0
+                                ? Colors.white
+                                : _hasBlackColor
+                                    ? Colors.black
+                                    : Colors.white),
+                      )),
+                );
+              })
         ],
       ),
     );

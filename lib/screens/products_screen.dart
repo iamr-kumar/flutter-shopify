@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:shopify/constants/Constants.dart';
 import 'package:shopify/widgets/custom_action_bar.dart';
@@ -17,7 +18,33 @@ class _ProductPageState extends State<ProductPage> {
   final CollectionReference _productsRef =
       FirebaseFirestore.instance.collection('Products');
 
-  int _selectedImage = 0;
+  final CollectionReference _usersRef =
+      FirebaseFirestore.instance.collection('Users');
+
+  User _user = FirebaseAuth.instance.currentUser;
+
+  Future _addToCart() {
+    return _usersRef
+        .doc(_user.uid)
+        .collection('Cart')
+        .doc(widget.productId)
+        .set({
+      'productId': widget.productId,
+    });
+  }
+
+  Future _saveProduct() {
+    return _usersRef
+        .doc(_user.uid)
+        .collection("Saved")
+        .doc(widget.productId)
+        .set({"productId": widget.productId});
+  }
+
+  SnackBar _getSnackbar(String text) {
+    return SnackBar(content: Text(text));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +86,55 @@ class _ProductPageState extends State<ProductPage> {
                         padding: const EdgeInsets.symmetric(
                             vertical: 12.0, horizontal: 24.0),
                         child: Text("${product['desc']}",
-                            style: TextStyle(fontSize: 16.0)))
+                            style: TextStyle(fontSize: 16.0))),
+                    Padding(
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 52, horizontal: 24),
+                        child: Row(
+                          children: [
+                            GestureDetector(
+                              onTap: () async {
+                                await _saveProduct();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    _getSnackbar("Product saved"));
+                              },
+                              child: Container(
+                                  width: 65.0,
+                                  height: 65.0,
+                                  decoration: BoxDecoration(
+                                      color: Color(0xFFDCDCDC),
+                                      borderRadius:
+                                          BorderRadius.circular(12.0)),
+                                  alignment: Alignment.center,
+                                  child: Image(
+                                    image: AssetImage(
+                                        "assets/images/tab_saved.png"),
+                                    height: 30.0,
+                                  )),
+                            ),
+                            Expanded(
+                                child: GestureDetector(
+                              onTap: () async {
+                                await _addToCart();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    _getSnackbar("Product added to cart"));
+                              },
+                              child: Container(
+                                  height: 65.0,
+                                  margin: EdgeInsets.only(left: 16.0),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      borderRadius:
+                                          BorderRadius.circular(12.0)),
+                                  child: Text("Add To Cart",
+                                      style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18.0,
+                                          fontWeight: FontWeight.w600))),
+                            ))
+                          ],
+                        ))
                   ],
                 );
               }
