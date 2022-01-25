@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:shopify/providers/products.dart';
 import 'package:shopify/tabs/home_tab.dart';
 import 'package:shopify/tabs/profile_tab.dart';
 import 'package:shopify/tabs/saved_tab.dart';
 import 'package:shopify/tabs/search_tab.dart';
-
+import 'package:provider/provider.dart';
 import 'package:shopify/widgets/bottom_tabs.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -31,35 +32,38 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Expanded(
-          child: PageView(
-            controller: pageController,
-            onPageChanged: (num) {
-              setState(() {
-                _selectedTab = num;
-              });
-            },
-            children: [
-              HomeTab(),
-              SavedTab(),
-              SearchTab(),
-              ProfileTab(),
-            ],
+        body: ChangeNotifierProvider(
+      create: (context) => Products(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: PageView(
+              controller: pageController,
+              onPageChanged: (num) {
+                setState(() {
+                  _selectedTab = num;
+                });
+              },
+              children: [
+                HomeTab(),
+                SavedTab(),
+                SearchTab(),
+                ProfileTab(),
+              ],
+            ),
           ),
-        ),
-        Container(
-            child: BottomTabs(
-          selectedTab: _selectedTab,
-          tabPressed: (num) {
-            pageController.animateToPage(num,
-                duration: Duration(milliseconds: 300),
-                curve: Curves.easeOutCubic);
-          },
-        ))
-      ],
+          Container(
+              child: BottomTabs(
+            selectedTab: _selectedTab,
+            tabPressed: (num) {
+              pageController.animateToPage(num,
+                  duration: Duration(milliseconds: 300),
+                  curve: Curves.easeOutCubic);
+            },
+          ))
+        ],
+      ),
     ));
   }
 }

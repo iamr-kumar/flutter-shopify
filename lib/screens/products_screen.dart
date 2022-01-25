@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shopify/constants/Constants.dart';
 import 'package:shopify/widgets/custom_action_bar.dart';
 import 'package:shopify/widgets/image_view.dart';
+import 'package:provider/provider.dart';
 
 class ProductPage extends StatefulWidget {
   final String productId;

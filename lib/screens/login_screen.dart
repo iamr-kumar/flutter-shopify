@@ -39,6 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
       if (e.code == 'user-not-found' || e.code == 'wrong-password') {
         return 'Invalid email or password';
       } else {
+      print("Error occurred here" + e.message);
         return e.message;
       }
     } catch (e) {
